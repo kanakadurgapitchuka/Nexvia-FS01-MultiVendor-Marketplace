@@ -264,8 +264,42 @@ function ProductDetails() {
 
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  async function submitReview(e) {
+  e.preventDefault();
+  setError('');
+
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    setError('Please sign in to submit a review.');
+    return;
+  }
+
+  try {
+    await api.post('/reviews', {
+      productId: id,
+      orderId: window.prompt('Enter your delivered order ID')?.trim(),
+      rating: Number(rating),
+      comment
+    });
+
+    setComment('');
+
+    const response = await api.get(`/products/${id}/reviews`);
+    setReviews(response.data.reviews || []);
+
+    setError('Review submitted successfully!');
+  } catch (err) {
+    setError(
+      err.response?.data?.message || 'Unable to submit review.'
+    );
+  }
+  }
 
   useEffect(() => {
     async function loadProduct() {
@@ -340,6 +374,30 @@ function ProductDetails() {
       <p>Stock: {product.stock}</p>
       <p>Sold by: {product.vendor?.name || 'Marketplace vendor'}</p>
 
+
+        <form onSubmit={submitReview}>
+  <h3>Write a Review</h3>
+
+  <label>Rating</label>
+  <select
+    value={rating}
+    onChange={(e) => setRating(e.target.value)}
+  >
+    <option value="5">5 Stars</option>
+    <option value="4">4 Stars</option>
+    <option value="3">3 Stars</option>
+    <option value="2">2 Stars</option>
+    <option value="1">1 Star</option>
+  </select>
+
+  <textarea
+    placeholder="Write your review..."
+    value={comment}
+    onChange={(e) => setComment(e.target.value)}
+  />
+
+  <button type="submit">Submit Review</button>
+</form>
       <h2>Reviews & Ratings</h2>
 
       {reviews.length === 0 ? (
