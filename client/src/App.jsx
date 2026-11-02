@@ -1,6 +1,12 @@
 
 import React, { useEffect, useState } from 'react';
-import { Link, Routes, Route, useNavigate } from 'react-router-dom';
+import {
+  Link,
+  Routes,
+  Route,
+  useNavigate,
+  useParams
+} from 'react-router-dom';
 import {
   ShoppingBag, Search, UserRound, Store, LayoutDashboard,
   LogOut, Package, Plus, ShoppingCart, ClipboardList
@@ -176,7 +182,12 @@ function App() {
     return 0;
   })
   .map(p => (
-                  <article className="product-card" key={p._id}>
+                  <article
+                    className="product-card"
+                      key={p._id}
+                      onClick={() => nav(`/products/${p._id}`)}
+                      style={{ cursor: 'pointer' }}
+                      >
                     <div className="product-image">
                       {p.images?.[0] ? (
   <img
@@ -197,7 +208,13 @@ function App() {
                       <p>{p.description || 'Thoughtfully selected from our marketplace.'}</p>
                       <div className="product-bottom">
                         <strong>₹{Number(p.price).toLocaleString('en-IN')}</strong>
-                        <button aria-label="Add to cart" onClick={() => add(p)}>
+                        <button
+                         aria-label="Add to cart"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            add(p);
+                              }}
+                              >
                           <Plus size={18} />
                         </button>
                       </div>
@@ -220,6 +237,10 @@ function App() {
           <Route path="/login" element={
   <Auth onAuth={u => { setUser(u); nav('/'); }} />
 } />
+<Route
+  path="/products/:id"
+  element={<ProductDetails />}
+/>
 
 <Route path="/cart" element={<Cart />} />
 
@@ -236,6 +257,108 @@ function App() {
     </div>
   );
 }
+
+
+function ProductDetails() {
+  const { id } = useParams();
+
+  const [product, setProduct] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    async function loadProduct() {
+      try {
+        const productResponse = await api.get(`/products/${id}`);
+
+        setProduct(productResponse.data.product);
+
+        try {
+          const reviewResponse = await api.get(`/products/${id}/reviews`);
+          setReviews(reviewResponse.data.reviews || []);
+        } catch {
+          setReviews([]);
+        }
+
+      } catch (err) {
+        setError(
+          err.response?.data?.message || 'Unable to load product.'
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadProduct();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <section className="content-page">
+        <p>Loading product...</p>
+      </section>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <section className="content-page">
+        <h2>{error || 'Product not found'}</h2>
+        <Link to="/">Back to products</Link>
+      </section>
+    );
+  }
+
+  return (
+    <section className="content-page">
+      <Link to="/">← Back to products</Link>
+
+      <h1>{product.name}</h1>
+
+      {product.images?.[0] && (
+        <img
+          src={`${api.defaults.baseURL}/products/image?key=${encodeURIComponent(
+            product.images[0]
+          )}`}
+          alt={product.name}
+          style={{
+            width: '100%',
+            maxWidth: '450px',
+            maxHeight: '400px',
+            objectFit: 'contain'
+          }}
+        />
+      )}
+
+      <h2>
+        ₹{Number(product.price).toLocaleString('en-IN')}
+      </h2>
+
+      <p>{product.description}</p>
+      <p>Category: {product.category}</p>
+      <p>Stock: {product.stock}</p>
+      <p>Sold by: {product.vendor?.name || 'Marketplace vendor'}</p>
+
+      <h2>Reviews & Ratings</h2>
+
+      {reviews.length === 0 ? (
+        <p>No reviews yet.</p>
+      ) : (
+        reviews.map((review, index) => (
+          <div className="cart-row" key={review._id || index}>
+            <div>
+              <strong>{review.customer?.name || 'Customer'}</strong>
+              <p>Rating: {review.rating}/5 ⭐</p>
+              <p>{review.comment}</p>
+            </div>
+          </div>
+        ))
+      )}
+    </section>
+  );
+}
+
 
 function Auth({ onAuth }) {
   const [mode, setMode] = useState('login');
