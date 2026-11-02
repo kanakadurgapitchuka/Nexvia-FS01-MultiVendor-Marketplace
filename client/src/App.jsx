@@ -180,7 +180,7 @@ function App() {
                     <div className="product-image">
                       {p.images?.[0] ? (
   <img
-    src={`http://localhost:5000/api/products/image?key=${encodeURIComponent(
+    src={`${api.defaults.baseURL}/products/image?key=${encodeURIComponent(
       p.images[0].startsWith('https://')
         ? new URL(p.images[0]).pathname.slice(1)
         : p.images[0]
