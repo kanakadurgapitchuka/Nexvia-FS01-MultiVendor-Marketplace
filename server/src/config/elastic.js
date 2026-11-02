@@ -1,3 +1,4 @@
+
 import { Client } from '@elastic/elasticsearch';
 
 const node = process.env.ELASTICSEARCH_URL;
@@ -15,12 +16,15 @@ export const elastic = node
 // Elasticsearch connection check
 if (elastic) {
   elastic.ping()
-    .then(() => console.log('Elasticsearch connected successfully'))
-    .catch((error) =>
-      console.error('Elasticsearch connection failed:', error.message)
-    );
+    .then(() => {
+      console.log('Elasticsearch connected successfully');
+    })
+    .catch((error) => {
+      console.error('Elasticsearch connection failed:', error);
+    });
 }
 
+// Index product in Elasticsearch
 export async function indexProduct(product) {
   if (!elastic) return;
 
