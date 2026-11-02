@@ -12,6 +12,15 @@ export const elastic = node
     })
   : null;
 
+// Elasticsearch connection check
+if (elastic) {
+  elastic.ping()
+    .then(() => console.log('Elasticsearch connected successfully'))
+    .catch((error) =>
+      console.error('Elasticsearch connection failed:', error.message)
+    );
+}
+
 export async function indexProduct(product) {
   if (!elastic) return;
 
