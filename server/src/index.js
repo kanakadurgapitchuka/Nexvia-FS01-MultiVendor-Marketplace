@@ -18,7 +18,7 @@ import invoiceRoutes from './routes/invoices.js';
 import adminRoutes from './routes/admin.js';
 
 const app = express();
-
+app.set("trust proxy", 1);
 // Allow images to be displayed by the frontend on a different port.
 app.use(
   helmet({
