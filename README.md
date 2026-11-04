@@ -10,7 +10,7 @@ This repository provides an integrated starter implementation and service adapte
 - Frontend: https://nexvia-fs-01-multi-vendor-marketpla.vercel.app/
 - Backend API: https://nexvia-fs01-multivendor-marketplace.onrender.com
 - API Health Check: https://nexvia-fs01-multivendor-marketplace.onrender.com/api/health
-- 
+
 ## Requirements
 - Node.js 20+ and npm
 - MongoDB Atlas URI
