@@ -5,6 +5,12 @@ Full-stack project scaffold based on the assigned requirements: React, Node.js/E
 ## Important status
 This repository provides an integrated starter implementation and service adapters. Before calling it production-ready, configure credentials, test each integration, add stronger operational controls, and review payment/marketplace compliance. Razorpay Route/vendor settlements require account/product eligibility and activation by Razorpay; do not assume a normal payment account can split funds automatically.
 
+## Live Demo
+
+- Frontend: https://nexvia-fs-01-multi-vendor-marketpla.vercel.app/
+- Backend API: https://nexvia-fs01-multivendor-marketplace.onrender.com
+- API Health Check: https://nexvia-fs01-multivendor-marketplace.onrender.com/api/health
+- 
 ## Requirements
 - Node.js 20+ and npm
 - MongoDB Atlas URI
